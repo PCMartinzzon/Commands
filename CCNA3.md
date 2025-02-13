@@ -600,7 +600,7 @@ R-1(config)# access-list 25 deny any (deny all other IP addresses)
 |                   | ICMP                | host  X.X.X.X              | neq                | echo (ping)              | host  X.X.X.X              | neq                | echo (ping)              |
 |                   | OSPF                |                            | range              | echo-reply               |                            | range              | echo-reply               |
 |                   | EIGRP               |                            |                    |                          |                            |                    |                          |
-|                   | Etc…                |                            |                    |                          |                            |                    |                          |
+| Permit            | ip                  | 192.168.1.21 0.0.0.255     | eq                 | 22                       | 192.168.1.22 0.0.0.255     |                    |                          |
 
 
 There can be additional optional commands (log, time-of-day, established, etc) on the end of most statements. The protocol field must match destination port/protocol - if used (example: TCP=Telnet, ICMP=Ping, UDP=DNS).
