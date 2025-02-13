@@ -1043,4 +1043,18 @@ R-1(config)# access-list 25 deny host 192.168.20.5 (deny specific host)
 
 R-1(config)# access-list 25 permit 192.168.20.0  0.0.0.255 (permit entire subnet)
 
+
+
+
 R-1(config)# access-list 25 deny any (deny all other IP addresses)
+
+
+| Action (required) | Protocol (required) | Source IP (required)       | Compare (optional) | Port/Protocol (optional) | Dest IP (required)         | Compare (optional) | Port/Protocol (optional) |
+|-------------------|---------------------|----------------------------|--------------------|--------------------------|----------------------------|--------------------|--------------------------|
+| permit            | IP                  | IP address & Wildcard mask | eq                 | 23 – telnet              | IP address & Wildcard mask | eq                 | 23 – telnet              |
+| deny              | TCP                 | gt                         | 80 – http          | gt                       | 80 – http                  |                    |                          |
+| remark            | UDP                 | any                        | lt                 | 443 – https              | any                        | lt                 | 443 – https              |
+|                   | ICMP                | host  X.X.X.X              | neq                | echo (ping)              | host  X.X.X.X              | neq                | echo (ping)              |
+|                   | OSPF                |                            | range              | echo-reply               |                            | range              | echo-reply               |
+|                   | EIGRP               |                            |                    |                          |                            |                    |                          |
+|                   | Etc…                |                            |                    |                          |                            |                    |                          |
