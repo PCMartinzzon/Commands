@@ -1043,11 +1043,11 @@ R-1(config)# access-list 25 deny host 192.168.20.5 (deny specific host)
 
 R-1(config)# access-list 25 permit 192.168.20.0  0.0.0.255 (permit entire subnet)
 
-
-
-
 R-1(config)# access-list 25 deny any (deny all other IP addresses)
 
+
+
+Extended Access Lists
 
 | Action (required) | Protocol (required) | Source IP (required)       | Compare (optional) | Port/Protocol (optional) | Dest IP (required)         | Compare (optional) | Port/Protocol (optional) |
 |-------------------|---------------------|----------------------------|--------------------|--------------------------|----------------------------|--------------------|--------------------------|
@@ -1058,3 +1058,242 @@ R-1(config)# access-list 25 deny any (deny all other IP addresses)
 |                   | OSPF                |                            | range              | echo-reply               |                            | range              | echo-reply               |
 |                   | EIGRP               |                            |                    |                          |                            |                    |                          |
 |                   | Etc…                |                            |                    |                          |                            |                    |                          |
+
+
+
+There can be additional optional commands (log, time-of-day, established, etc) on the end of most statements. The protocol field must match destination port/protocol - if used (example: TCP=Telnet, ICMP=Ping, UDP=DNS).
+
+**Named Extended Access List:
+
+R-1(config)# ip access-list extended NAME (name the list)
+
+Example: Deny an individual host to an entire subnet for Telnet and also log matches:
+
+R-1(config-ext-nacl)# deny tcp host 192.168.20.10  172.16.0.0 0.0.255.255 eq 23 log
+
+Example: Permit an entire subnet to go anywhere:
+
+R-1(config-ext-nacl)# permit ip 192.168.20.0  0.0.0.255 any
+
+Example: Deny everything:
+
+R-1(config-ext-nacl)# deny ip any any (this is applied by default if not configured)
+
+ 
+
+Applying Access Lists
+
+ 
+
+R-1(config)# interface fastethernet 0/0
+
+R-1(config-if)# ip access-group NAME in (evaluate packets coming in to the router)
+
+R-1(config-if)# ip access-group NAME out (evaluate packets leaving the router)
+
+R-1(config)# line vty 0 4 
+
+R-1(config-line)# access-class NAME in (evaluate packets for telnet or SSH)
+
+ 
+
+Dynamic Access List (Stateful-Firewall)
+
+ 
+
+R1(config)# ip access-list extended OUTBOUND-TRAFFIC
+
+R1(config-ext-nacl)# permit tcp any any reflect TCP-TRAFFIC
+
+R1(config-ext-nacl)# permit udp any any reflect UDP-TRAFFIC
+
+R1(config-ext-nacl)# permit icmp any any reflect ICMP-TRAFFIC
+
+R1(config-ext-nacl)# deny ip any any
+
+R1(config)# ip access-list extended EVALUATE-INBOUND
+
+R1(config-ext-nacl)# evaluate TCP-TRAFFIC
+
+R1(config-ext-nacl)# evaluate UDP-TRAFFIC
+
+R1(config-ext-nacl)# evaluate ICMP-TRAFFIC
+
+R1(config)# interface serial 0/0/0
+
+R1(config-if)# ip access-group OUTBOUND-TRAFFIC out
+
+R1(config-if)# ip access-group EVALUATE-INBOUND in
+
+ 
+
+Time-Based ACL
+
+ 
+
+R-1(config)# time-range MON-WED-FRI
+
+R-1(config-time-range)# periodic Monday Wednesday Friday 8:00 to 17:00
+
+R-1(config)# access-list 133 permit tcp 192.168.20.0  0.0.0.255 any eq telnet time-range MON-WED-FRI
+
+R-1# show access-list (see access lists on this router and # of ‘matches’ per line)
+
+R-1# show access-list NAME (see a specific access list and # of ‘matches’ per line)
+
+ 
+
+DHCP and NAT
+
+ 
+
+Configuring DHCP for IPv4
+
+ 
+
+R-1(config)# ip dhcp excluded 172.16.2.1 172.16.2.7 (excluded IP range)
+
+R-1(config)# ip dhcp pool LAN-2 (name this DHCP pool)
+
+R-1(dhcp-config)# network 172.16.2.0  255.255.255.128 (entire network range)
+
+R-1(dhcp-config)# default-router 172.16.2.1 (address on router port)
+
+R-1(dhcp-config)# dns-server 140.198.8.14 (DNS server – can have up to 4)
+
+R-1(dhcp-config)# domain-name MCC.COM (optional domain name)
+
+R-1(dhcp-config)# lease-time 5 (optional - change to 5 day lease, 1 day is default)
+
+!
+
+R-3(config)# interface fastethernet 0/1 (interface for network with DHCP clients)
+
+R-3(config-if)# ip helper-address 192.168.15.2 (address where DHCP server is)
+
+!
+
+R-1# show ip dhcp binding (see what IP addresses are assigned & MAC addresses)
+
+DOS-PROMPT>ipconfig /release (remove dynamically assigned IP information on PC)
+
+DOS-PROMPT>ipconfig /renew (get new IP address from DHCP server)
+
+ 
+
+Configuring DHCP for IPv6 Stateless Address Auto-Configuration (SLAAC)
+
+ 
+
+R1(config)# ipv6 unicast routing (make sure IPv6 is activated)
+
+R1(config)# ipv6 dhcp pool LAN-10-STATELESS (create pool for addresses and DNS)
+
+R1(dhcpv6-config)# dns-server 2001:345:ACAD:F::5 (IPv6 DNS server address)
+
+R1(dhcpv6-config)# domain-name cisco.com (optional domain name)
+
+R1(config)# interface g1/1
+
+R1(config-if)# ipv6 address 2001:A1B5:C13:10::1/64 (configure IPv6 address)
+
+R1(config-if)# ipv6 dhcp server LAN-10-STATELESS (look to this DHCP pool)
+
+R1(config-if)# ipv6 nd other-config-flag (enable IPv6 Neighbor Discovery)
+
+
+
+
+
+
+Configuring DHCP for IPv6 Stateful Address Auto-configuration
+
+ 
+
+R1(config)# ipv6 unicast routing (make sure IPv6 is activated)
+
+R1(config)# ipv6 dhcp pool LAN-10-STATEFUL (create pool for addresses and DNS)
+
+R1(dhcpv6-config)# address prefix 2001:D7B:CAFÉ:10::/64 lifetime infinite infinite
+
+R1(dhcpv6-config)# dns-server 2001:345:ACAD:F::5 (IPv6 DNS server address)
+
+R1(dhcpv6-config)# domain-name cisco.com (optional domain name)
+
+R1(config)# interface g1/1
+
+R1(config-if)# ipv6 address 2001:D7B:CAFE:10::1/64 (configure IPv6 address)
+
+R1(config-if)# ipv6 dhcp server LAN-10-STATEFUL (look to this DHCP pool)
+
+R1(config-if)# ipv6 nd managed-config-flag (enable IPv6 Neighbor Discovery)
+
+R-3(config)# interface fastethernet 0/1 (interface for network with DHCP clients)
+
+R-3(config-if)# ip dhcp relay destination 2001:A123:7CA1::15 (IPv6 DHCP server address)
+
+R1# show ipv6 dhcp pool
+
+R1# show ipv6 dhcp binding
+
+ 
+
+Configure NAT for IPv4
+
+ 
+
+-For both static and dynamic NAT, designate interfaces as inside or outside:
+
+R-1(config)# interface fa0/0 (typically designate all interfaces except the outside one)
+
+R-1(config-if)# ip nat inside (designate this as an inside interface)
+
+R-1(config)# interface serial 0/0/0 (typically there is only one outside interface)
+
+R-1(config-if)# ip nat outside (designate this as an outside interface)
+
+!
+
+-Static NAT requires only one statement. The IP addresses are inside / outside:
+
+R-1(config)# ip nat inside source static 192.168.10.22  73.2.34.137
+
+!
+
+-Dynamic NAT may use a pool of ‘outside addresses’. If you do not use a pool, you will have to use the address on the outside interface. You can use ‘netmask’:
+
+R-1(config)# ip nat pool POOL-NAME 73.2.34.138  73.2.34.143 netmask 255.255.255.248
+
+-or- You may choose to use ‘prefix-length’: 
+
+R-1(config)# ip nat pool POOL-NAME 73.2.34.138  73.2.34.143 prefix-length 29
+
+!
+
+-Dynamic NAT requires an ACL to define which internal addresses can be NATted:
+
+R-1(config)# ip access-list standard NAT-ELIGIBLE
+
+R-1(config-std-nacl)# permit 192.168.10.0  0.0.0.255 (include all subnets)
+
+R-1(config-std-nacl)# deny any
+
+!
+
+-Dynamic NAT can use the pool for outside addresses:
+
+R-1(config)# ip nat inside source list NAT-ELIGIBLE pool POOL-NAME
+
+-or- Dynamic NAT can use the pool with overload to share outside addresses:
+
+R-1(config)# ip nat inside source list NAT-ELIGIBLE pool POOL-NAME overload
+
+-or- Dynamic NAT can use the exit interface – almost always will use overload:
+
+R-1(config)# ip nat inside source list NAT-ELIGIBLE interface serial 0/0/0 overload
+
+ 
+
+R-1# show ip nat translations (current translations- dynamic and static)
+
+R-1# show ip nat statistics (see # of active translations, role of interfaces, etc)
