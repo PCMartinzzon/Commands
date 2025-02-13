@@ -41,66 +41,39 @@ undebug all (turn off all debugging commands – handy if this is a busy router)
 
 Line editing commands
 
- 
-
+```
 ctrl-a (go to the beginning of the current line)
-
 ctrl-e (go to the end of the current line)
-
 ctrl-p or up-arrow (repeat up to 10 previous commands in the current mode)
-
 ctrl-n or dn-arrow (if you have gone back in command history, this moves forward)
-
 backspace-key (erase the character to the left of the current cursor position)
-
 ctrl-z or end (go out to privilege mode)
-
 exit (move back one level in the hierarchical command structure)
-
 ctrl-c (cancel current command or leave Setup mode if you accidentally get into it)
-
 ctrl-shift-6 (stop ping or trace)
-
 terminal length 0 [zero] (turn off paging – makes output without breaks)
-
 terminal length 24 (normal page breaks in output)
-
 wr (shortcut for ‘copy running-config startup-config)
+```
 
 Common Port Numbers and Protocols
-
- 
-
+```
 File Transfer Protocol (FTP)
-
 FTP Control=TCP port 21
-
 FTP Data = TCP Port 20
-
 Secure Shell (SSH) - TCP Port 22
-
 Telnet - TCP Port 23
-
 Simple Mail Transfer Protocol (SMTP) - TCP Port 25
-
 Domain Name System (DNS) - TCP/UDP Port 53
-
 Dynamic Host Configuration Protocol (DHCP)
-
 BOOTPS=UDP Port 67 (DHCP request from client to server)
-
 BOOTPC=UDP Port 68 (DHCP reply from server to client)
-
 Hypertext Transfer Protocol (HTTP) - TCP Port 80
-
 Post Office Protocol – incoming mail (POP) - TCP Port 110
-
 Network Time Protocol (NTP) - UDP Port 123
-
 Simple Network Management Protocol (SNMP) - UDP Port 161
-
 Secure Hypertext Transfer Protocol (HTTPS) - TCP Port 443
-
+```
 
 
 
