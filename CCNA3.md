@@ -1,4 +1,9 @@
-Troubleshooting, Editing, Port #’s
+##  table of contents
+- [Troubleshooting](#troubleshooting)
+- [Line editing commands](#line-editing-commands)
+- [Common Port Numbers and Protocols](#common-port-numbers-and-protocols)
+
+## Troubleshooting
 
  
 ```
@@ -39,7 +44,7 @@ undebug all (turn off all debugging commands – handy if this is a busy router)
 ```
  
 
-Line editing commands
+## Line editing commands
 
 ```
 ctrl-a (go to the beginning of the current line)
@@ -56,7 +61,7 @@ terminal length 24 (normal page breaks in output)
 wr (shortcut for ‘copy running-config startup-config)
 ```
 
-Common Port Numbers and Protocols
+## Common Port Numbers and Protocols
 ```
 File Transfer Protocol (FTP)
 FTP Control=TCP port 21
