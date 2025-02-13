@@ -79,300 +79,174 @@ Secure Hypertext Transfer Protocol (HTTPS) - TCP Port 443
 
 Basic Router / Switch Configuration
 
- 
-
 To Restore a Switch or Router to Default Configuration
-
- 
-
+```
 S1# delete vlan.dat (hit ‘enter’ to accept defaults) [Note: Only do this on a switch]
-
 S1# erase startup-config (hit ‘enter’ to accept defaults [Router or Switch])
-
 S1# reload  (answer ‘no’ if asked to save current config [Router or Switch])
-
+```
  
 
 Router / Switch Basic Configuration
-
- 
-
+```
 R1# configure terminal (enter global configuration mode)
-
 R1(config)# hostname NAME (configure the NAME of the Router or Switch)
-
 R1(config)# security passwords min-length 5 (set minimum password length)
-
 R1(config)# service password-encryption (encrypt all passwords – except secret)
-
 R1(config)# login block-for 60 attempts 3 within 30 (wait 1 min if 3 bad attempts in 30 sec)
-
 R1(config)# enable secret PASSWORD (make the privilege level password ‘PASSWORD’)
-
 R1(config)# no ip domain-lookup (suppress DNS attempt when a command is mistyped)
-
 R1(config)# banner motd MESSAGE (create a MESSAGE that will display when logging in)
-
 R1(config)# line console 0 [zero] (enter the console connection configuration mode)
-
 R1(config-line)# password PASSWORD (make the user level password ‘PASSWORD’)
-
 R1(config-line)# login (instruct the router that you want it to check for a password)
-
 R1(config-line)# logging synchronous (assists by keeping command entry more orderly)
-
 R1(config-line)# exec-timeout 0 0 [zeroes] (no timeout while configuring the router)
-
 R1(config)# line vty 0 4 [zero 4] (configure the same options as line console above)
-
 S1(config)# line vty 0 15 [zero 15] (configure the same options in a switch)
-
 R1# copy running-config startup-config (save config in NVRAM)
-
 R1# wr (legacy command - Same as copy running-configuration startup-configuration)
-
 R1(config)# ! (remark – makes no configuration changes)
-
+```
  
 
 For Switch Management Interface Configuration
-
- 
-
+```
 S1(config)# interface vlan 1 (create a virtual host on the switch)
-
 S1(config-if)# description Management interface for this switch (optional description)
-
 S1(config-if)# ip address 192.168.100.50  255.255.255.0 (assign an IP address)
-
 S1(config-if)# no shut (must turn it on)
-
 S1(config-if)# exit (leave interface config and return to global config)
-
 S1(config)# ip default-gateway 192.168.100.1 (must be on same subnet as Mgt interface)
-
 S1(config)# enable secret class (must have an enable password for remote config)
-
 S1(config)# line vty 0 15 (switches may have 16 VTY connections at once)
-
 S1(config-line)# password cisco (must set a login password for telnet to be possible)
-
 S1(config-line)# login (tell the VTY ports to ask for password from remote user)
-
 S1(config-line)# transport input telnet (allows only telnet for remote config – default)
-
+```
  
 
 Configuring IPv4 Router Interface
-
- 
-
+```
 R1(config)# interface INTERFACE-TYPE (enter configuration mode for an interface)
-
 R1(config-if)# ip address ADDRESS SNM (assign the IP Address and subnet mask)
-
 R1(config-if)# description WORDS (document what this interface is used for)
-
 R1(config-if)# clock  rate CLOCK (on serial DCE interfaces, set the speed of the link)
-
 R1(config-if)# bandwidth VALUE (used by the routing protocol for the speed of the link)
-
 R1(config-if)# no shutdown (turn the interface on)
-
 R1(config-if)# shutdown (turn the interface off)
-
+```
  
 
 Configuring IPv6 Router Interface
-
- 
-
+```
 R1(config)# ipv6 unicast-routing (activate IPv6 routing – off by default)
-
 R1(config)# interface Gi1/1
-
 R1(config-if)# ipv6 enable (turn on ipv6 in this interface)
-
 R1(config-if)# ipv6 address 3ffe:b00:c18:1::3 /64 (manually enter complete address)
-
    -or-
-
 R1(config-if)# ipv6 address 3ffe:b00:c18:1:: /64 eui-64 (auto configure host portion) 
-
 R1(config-if)# ipv6 address fe80::4 link-local (configure link-local address)
-
+```
 
 
 
 Layer-3 Switch Commands
-
- 
-
+```
 S1(config)# ip routing (activate IPv4 routing within the switch)
-
 S1(config)# ipv6 routing (activate IPv6 routing within the switch)
-
 S1(config-if)# no switchport (used to designate that this is a router port, not a switchport)
-
 S1(config-if)# switchport trunk encapsulation dot1q (to configure trunking for dot1Q)
-
-
-
-
-
-
-
-
-
-
-
+```
 
 VLANS, Trunks, Router-on-a-Stick, VTP
 
- 
-
 VLAN Creation and Port Assignment
-
- 
-
+```
 S1(config)# vlan 10 (create VLAN 10 in the VLAN.DAT database)
-
 S1(config-vlan)# name Management (optionally name the VLAN)
-
 S1(config)# interface fa0/12 (select a port on the switch)  --or--
-
 S1(config)# interface range fa0/12 – 20 (select a range of ports to be configured the same)
-
 S1(config-if)# switchport mode access (set the port to Access mode)
-
 S1(config-if)# switchport access vlan 10 (assign this port(s) to VLAN 10)
-
+```
  
 
 Trunk Creation
-
- 
-
+```
 S1(config)# interface gi1/1 (select port for trunking)
-
 S1(config-if)# switchport trunk encapsulation dot1q (NOTE: on Layer 3 switch only)
-
 S1(config-if)# switchport mode trunk (set the port to be in trunk mode)
-
 S1(config-if)# switchport trunk native vlan 99 (set VLAN 99 to carry native traffic)
-
 S1(config-if)# switchport trunk allowed vlan 1,10,20,99 (optional, don’t forget to include VLAN 1 and the native VLAN)
-
+```
  
 
 Router-on-a-Stick Configuration
-
- 
-
+```
 R1(config)# interface Fa0/0 (select the main interface)
-
 R1(config-if)# no ip address (there should not be any IP Address on the main interface)
-
 R1(config-if)# interface Fa0/0.10 (create a sub-interface – the number can be anything)
-
 R1(config-if)# encapsulation dot1q 10 (use 802.1Q trunking; assign to this VLAN #)
-
 R1(config-if)# ip address 172.16.10.1 255.255.255.255 (define the default-gateway IP)
-
 R1(config-if)# interface Fa0/0.99 (create another sub-interface - this one for native traffic)
-
 R1(config-if)# encapsulation dot1q 99 native (802.1Q trunking; VLAN #; and native)
-
 (NOTE: No IP address unless workstations or management interfaces are on this VLAN)
-
 R1(config)# ip classless (classless routing behavior – default in IOS 11.3+)
-
 R1(config)# no ip classless (classful routing behavior)
-
+```
  
 
 VLAN Trunking Protocol (VTP) Configuration
-
- 
-
+```
 S1(config)# vtp mode server (configure this switch to be in server mode)  --or--
-
 S1(config)# vtp mode client (configure this switch to be in client mode)  ---or--
-
 S1(config)# vtp mode transparent (configure this switch in transparent mode - Suggested)
-
 S1(config)# vtp domain NAME (change the VTP domain name of this switch to NAME)
-
 S1(config)# vtp password PASSWORD (change the VTP password for this switch)
-
 S1(config)# vtp pruning (activate VTP pruning – Not supported in Packet Tracer)
-
 S1(config)# vtp version 2 (change the VTP version to 2)
-
 S1# show vtp status (see VTP mode, revision, version, domain name, pruning mode, etc)
-
 S1# show vtp password (only way to see the VTP password – does not show in status)
-
-
-
-
+```
 
 Etherchannel (PortChannel) 
 
- 
-
 To configure a Layer 2 (trunking) Etherchannel:
-
- 
-
+```
 S1(config)# interface range fa0/1 – 4 (group of physical interfaces)
-
 S1(config-if)# switchport trunk encapsulation dot1q (NOTE: on Layer 3 switch only)
-
 S1(config-if)# switchport mode trunk (set to trunk mode)
-
 S1(config-if)# switchport trunk native vlan 777 (Set native VLAN)
-
 S1(config-if)# channel-protocol lacp (set this interface to LACP portchannel)  -or--
-
 S1(config-if)# channel-protocol pagp (set this interface to PAgP portchannel)
-
 S1(config-if)#in channel-group 3 mode [see choices below]
 
 passive (enable LACP only if a LACP device is detected)
-
 active (enable LACP unconditionally)
-
 auto (enable PAgP only if a PAgP device is detected)
-
 desirable (enable PAgP unconditionally)
-
 on (enable Etherchannel)
 
 S1(config)# interface port-channel 3 (configure the virtual interface from 1 to 6)
-
 S1(config-if)# switchport mode trunk (set to trunk mode)
-
 S1(config-if)# switchport trunk native vlan 777 (set native VLAN the same as the physical)
-
 S1(config-if)# no shutdown (turn on the virtual interface)
+```
 
 To configure a Layer 3 Etherchannel:
-
- 
-
+```
 SW1(config)# interface range fa0/1 – 2
 SW1(config-if)#  no switchport
 SW1(config-if)#  channel-group 1 mode {active, passive, on}
-
 SW1(config)# interface port-channel 1
 SW1(config-if)# no switchport
 SW1(config-if)# ip address x.x.x.x m.m.m.m       (The other end is configured the same)
-
+```
  
 
 EtherChannel uses a load-balancing algorithm based on selected type or criteria:
-
+```
 Source IP Address (src-ip)
 Destination IP Address (dst-ip)
 Both Source and Destination IP (src-dst-ip) – default L3 type
@@ -383,322 +257,181 @@ Source TCP/UDP port number (src-port)
 Destination TCP/UDP port number (dst-port)
 Both Source and Destination port number (src-dst-port)
 SW1(config)# port-channel load-balance TYPE
-
-
-
-
-
-
-
-
-
-
+```
 
 Spanning Tree Protocol (STP), HSRP
 
- 
-
 Spanning Tree
-
- 
-
+```
 S1(config)# spanning-tree mode pvst (configure for PVST – Default)
-
 S1(config)# spanning-tree mode rapid-pvst (configure this switch for rapid PVST)
-
 S1(config)# spanning-tree vlan 10,20 root primary (make root bridge for these VLANs)
-
 S1(config)# spanning-tree vlan 10 root secondary (make secondary root bridge for VLAN)
-
 S1(config)# spanning-tree vlan 10 priority 8192 (set the BID priority to 8192 in this VLAN)
-
 S1(config)# spanning-tree portfast default (default Portfast on all interfaces in this switch)
-
 S1(config)# interface range fa0/10 – 20 (must be configured as Access ports for Portfast)
-
 S1(config-if)# spanning-tree portfast (set interfaces for Portfast)
-
 S1(config-if)# spanning-tree bpduguard enable (disables interface if it receives a BPDU)
-
 S1(config)# interface fa0/1 (select a port to set STP port priority)
-
 S1(config-if)# spanning-tree vlan 10 port-priority 16 (set port priority to 16; default is 128)
-
- 
-
+```
+```
 S1# show spanning-tree (see spanning-tree status on a VLAN-by-VLAN basis)
-
 S1# show spanning-tree vlan 10 (see detail spanning-tree information for VLAN 10)
-
 S1# show spanning-tree summary (among other things, see if this is the root bridge)
-
 S1# show spanning-tree blockedports (see which ports are in STP blocking status)
-
 S1# show spanning-tree root (see which BID is root on a VLAN-by-VLAN basis)
-
- 
+```
 
 Hot Standby Routing Protocol (HSRP) for IPv4
-
- 
-
+```
 R1(config)# interface fastethernet 0/1
-
 R1(config)# standby version 2 (use the same version at each end)
-
 R1(config-if)# standby [optional group#] ip [optional IP-ADDRESS] [optional secondary]
-
 (The other end is configured the same)
-
 R1(config-if)# standby [optional group#] priority NUMBER [optional preempt]
-
+```
 Set a higher priority (default 100) to make this router the primary in HSRP
-
 Preempt will make this router the active one if it had been down and comes back up 
-
 Hot Standby Routing Protocol (HSRP) for IPv6
-
- 
-
+```
 R1(config)# interface fastethernet 0/1
-
 R1(config-if)# standby version 2 (use the same version at each end)
-
 R1(config-if)# standby GROUP# ipv6 autoconfig (create virtual IPv6 Link-Local address)
-
 R1(config-if)# standby GROUP# ipv6 2001:CAFE:ACAD:4::1/64 (set virtual shared IP)
-
 (The other end is configured the same)
-
 R1(config-if)# standby GROUP# priority NUMBER [optional preempt]
-
+```
 Set a higher priority (default 100) to make this router the primary in HSRP
 
 Preempt will make this router the active one if it had been down and comes back up 
 
- 
-
+```
 R1# show standby (verify the configuration)
-
-
-
-
-
-
+```
 
 
 Security Practices
-
- 
-
+```
 R1(config)# service password-encryption (encrypt all passwords (except ‘secret’)
-
 R1(config)# security password min-length 8 (set minimum 8 character passwords)
-
 R1(config)# login block-for 120 attempts 3 within 60 (block for 2 minutes if more than 3 failed logins within 60 seconds)
-
- 
+```
 
 SSH Configuration
-
- 
-
+```
 Router(config)# hostname R1 (must change the name of the device from the default)
-
 R1(config)# username Bob password Let-me-in! (configure a local user and password)
-
 R1(config)# ip domain-name ANYTHING.COM (must set for crypto-key generation)
-
-R1(config)# crypto key generate rsa (make an encryption key - select 1024 bits)
-
+R1(config)# crypto key generate rsa gerenal keys modulus 1024 (make an encryption key - select 1024 bits)
 R1(config)# ip ssh version 2 (configure for SSH version 2)
-
 R1(config)# line vty 0 15 (change parameters for remote access)
-
 R1(config-line)# login local (select to authenticate against usernames in this device)
-
 R1(config-line)# transport input ssh (only allow SSH for remote management)
-
+```
  
 
 Port Security Configuration on a Switch
-
- 
-
+```
 S1(config)# interface fa0/1 or interface range fa0/1 – 15, gi1/1
-
 S1(config-if)# switchport mode access (must change from dynamic to access mode)
-
 S1(config-if)# switchport port-security (must do to activate port-security)
-
 S1(config-if)# switchport port-security maximum 25 (allow 25 MAC addresses)
-
 S1(config-if)# switchport port-security mac-address sticky (memorize MAC addresses)
-
 S1(config-if)# switchport port-security violation restrict (send SNMP message)  --or--
-
 S1(config-if)# switchport port-security violation protect (only stop excess MACs)  –or--
-
 S1(config-if)# switchport port-security violation shutdown (shutdown interface - default)
-
 S1(config-if)# switchport protected (does not allow traffic to/from other protected ports)
-
 S1(config-if)# spanning-tree bpduguard enable (disables interface if it receives a BPDU)
-
 S1(config-if)# shutdown then no shutdown (restore individual interface if it has shutdown)
-
 S1# errdisable recovery cause psecure_violation (restore shutdown interfaces in 5 min)
-
- 
-
+```
+```
 S1# show port-security interface fa0/12 (show security configuration for an interface)
-
+```
  
 
 Enable/Disable Cisco Discovery Protocol (CDP)
-
- 
-
+```
 R1(config)# cdp run (activate CDP globally in the router – on by default)
-
 R1(config)# no cdp run (disable CDP within the entire router)
-
 R1(config-if)# no cdp enable (stop CDP updates leaving through this specific interface)
-
- 
+```
 
 IP DHCP Snooping
-
- 
-
+```
 R1(config)# ip dhcp snooping (globally enable DHCP snooping)
-
 R1(config-if)# ip dhcp snooping trust (interface with DHCP server)
-
-
-
-
-
-
+```
 
 Routing (Static, RIP, EIGRP, OSPF)
 
- 
-
 Configuring Static Routes
-
- 
-
+```
 R1(config)# ip route 0.0.0.0  0.0.0.0 serial0/0 (default-route goes out serial 0/0)
-
 R1(config)# ip route 0.0.0.0  0.0.0.0 50.77.4.13 (default-route goes to next-hop 50.77.4.13)
-
 R1(config)# ip route 0.0.0.0  0.0.0.0 serial0/0 150 (default-route goes out serial 0/0. An optional parameter is added to set the administrative distance to 150)
-
 R1(config)# ip route 47.151.2.0  255.255.255.0 172.24.2.11 (to get to network 47.151.2.0/24, go to next-hop address of 172.24.2.11)
-
 R1(config)# ip route 47.151.2.0  255.255.255.0 serial0/1 (to get to network 47.151.2.0/24, go out serial 0/1)
-
 R1(config)# ip route 47.151.2.0  255.255.255.0 192.168.12.2  fastethernet0/0 (to get to network 47.151.2.0/24, go to the next-hop 192.168.12.2 out Fastethernet0/0; on Ethernet both are needed)
-
+```
  
 
 Configuring RIP (IPv4)
-
- 
-
+```
 R1(config)# no router rip (remove all RIP configurations and routing table entries)
-
 R1(config)# router rip (enter rip configuration commands)
-
 R1(config-router)# network 192.168.10.0 (define which directly connected network(s) to include in RIP update processes. No subnet mask – always classful)
-
 R1(config-router)# passive-interface fastethernet0/0 (prevent RIP updates from broadcasting out this interface)
-
 R1(config-router)# default-information originate (configure RIP to include default-routes in updates to other routers. This is disabled by default. Only on router with default-route)
-
 R1(config-router)# redistribute static (configure RIP to include classful static routes in updates to other routers. This is disabled by default. Only needed if there are static routes)
-
 R1# debug ip rip (examine RIP updates in real-time)
-
+```
  
 
 Additional Commands to configure RIP Version 2
-
- 
-
+```
 R1(config-router)# version 2 (configure RIP for RIPv2)
-
 R1(config-router)# no auto-summary (turn off automatic classful summarization- suggested)
-
+```
  
 
 Configuring RIPng (for IPv6)
-
- 
-
+```
 R1(config)# ipv6 route  ::/0 S0/0/1 (default route goes out S0/0/1)
-
 R1(config)# ipv6 router rip NAME (start the RIPng instance)
-
 R1(config)# interface fa0/1
-
 R1(config-if)# ipv6 rip NAME enable (include this interface and subnet in routing) 
-
 R1(config-if)# ipv6 rip NAME default-information originate (send default route
-
+```
  
 
 Configuring IPv4 EIGRP
-
- 
-
+```
 R1(config)# no router eigrp 100 (completely remove this instance of EIGRP in this router)
-
 R1(config)# router eigrp 100 (100=Process ID within this network – Cisco calls this Autonomous System)
-
 R1(config)# eigrp router-id 5.5.5.5 (use this ID when identifying EIGRP neighbors)
-
 R1(config-router)# no auto-summary (the default is to summarize to classful boundaries)
-
 R1(config-router)# network 172.16.0.0 (no subnet or wildcard mask is needed if classful)
-
 R1(config-router)# network 172.16.25.0  0.0.0.255 (wildcard mask – this is inverse of /24)
-
 R1(config-router)# passive-interface default (no routing updates out any interface)
-
 R1(config-router)# no passive-interface fastethernet 0/1 (allow certain interfaces)
-
 R1(config-router)# passive-interface fastethernet 0/0 (no routing updates out Fa0/0)
-
 R1(config-router)# redistribute static (one statement redistributes static routes - including the default-route)
-
 R1(config-if)# maximum paths 2 (load balancing paths: default=4, no load balancing=1)
-
 R1(config-router)# metric weights 0 k1 k2 k3 k4 k5 (used to modify the metric multipliers)
-
 R1(config-if)# bandwidth 768 (indicate the serial line speed for the routing protocol – this example is 768-K)
-
 R1(config-if)# ip summary-address eigrp 100 172.16.24.0  255.255.252.0 (manually summarized network statement configured on outbound interface)
-
 R1(config-if)# ip bandwidth-percent eigrp  100 40 (ex. limit EIGRP AS=100 updates to a max of 40% of link bandwidth)
-
 R1(config-if)# ip hello-interval eigrp  100 30 (ex. set hello intervals on this interface to 30s for EIGRP AS=100)
-
 R1(config-if)# ip hold-time eigrp  100 90 (in this example, set the hold-time on this interface to 90s for EIGRP AS=100)
-
 R1(config)# key chain MYCHAIN (name the key chain – done in global config)
-
 R1(config-keychain)# key 1 (must assign a number – same at both ends of link)
-
 R1(config-keychain-key)# key-string securetraffic (‘securetraffic’ is the passphrase)
-
 R1(config)# interface serial 0/1 (interface to the other EIGRP router)
-
 R1(config-subif)# ip authentication mode eigrp 10 md5 (turn on authentication)
-
 R1(config-subif)# ip authentication key-chain eigrp 10 MYCHAIN (use this key)
-
+```
  
 
 R1# show ip eigrp neighbors (see neighbor adjacencies)
