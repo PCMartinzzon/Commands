@@ -653,7 +653,7 @@ R-1# show access-list NAME (see a specific access list and # of ‘matches’ pe
 ```
 
 ### Random
-## Numbered Standard IPv4 ACL
+N-u-m-b--e-r-e-d S-t-a-n--d-a-r-d IPv4 ACL
 ```
 R1(config)# access-list 10 remark ACE permits ONLY host 192.168.10.10 to the internet
 R1(config)# access-list 10 permit host 192.168.10.10
