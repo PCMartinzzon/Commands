@@ -49,6 +49,7 @@
    * [Configuring DHCP for IPv6 Stateless Address Auto-Configuration (SLAAC)](#configuring-dhcp-for-ipv6-stateless-address-auto-configuration-slaac)
    * [Configuring DHCP for IPv6 Stateful Address Auto-configuration](#configuring-dhcp-for-ipv6-stateful-address-auto-configuration)
 - [Configure NAT for IPv4](#configure-nat-for-ipv4)
+- [Configure PAT for IPv4](#pat)
 
 ## Troubleshooting
 
@@ -741,4 +742,61 @@ R-1(config)# ip nat inside source list NAT-ELIGIBLE interface serial 0/0/0 overl
 ```
 R-1# show ip nat translations (current translations- dynamic and static)
 R-1# show ip nat statistics (see # of active translations, role of interfaces, etc)
+```
+
+-Static nat
+```
+  # step 1 - mappa lokala insidan mot den globala
+R2(config)# ip nat inside source static 192.168.10.254 209.165.201.5
+  #step 2 - sätt interfacen som inside och outside
+R2(config)# interface serial 0/1/0
+R2(config-if)# ip address 192.168.1.2 255.255.255.252
+R2(config-if)# ip nat inside
+R2(config-if)# exit
+R2(config)# interface serial 0/1/1
+R2(config-if)# ip address 209.165.200.1 255.255.255.252
+R2(config-if)# ip nat outside
+```
+Dynamisk nat
+```
+    # step 1 - defienra en pool
+R2(config)# ip nat pool NAT-POOL1 209.165.200.226 209.165.200.240 netmask 255.255.255.224
+
+    # step 2 - standard ACL to identify (permit)
+R2(config)# access-list 1 permit 192.168.0.0 0.0.255.255
+
+    # step 3 - Bind the ACL to the pool
+R2(config)# ip nat inside source list 1 pool NAT-POOL1
+
+    # step 4 - sätt interfacen som inside och outside
+R2(config)# interface serial 0/1/0
+R2(config-if)# ip nat inside
+R2(config)# interface serial 0/1/1
+R2(config-if)# ip nat outside
+```
+### PAT
+-PAT - Singel
+```
+    # step 1 - defienra en pool
+R2(config)# ip nat inside source list 1 interface serial 0/1/1 overload
+R2(config)# access-list 1 permit 192.168.0.0 0.0.255.255
+R2(config)# interface serial0/1/0
+R2(config-if)# ip nat inside
+R2(config-if)# exit
+R2(config)# interface Serial0/1/1
+R2(config-if)# ip nat outside
+```
+-PAT - POOL
+```
+    # step 1 - defienra en pool
+R2(config)# ip nat pool NAT-POOL2 209.165.200.226 209.165.200.240 netmask 255.255.255.224
+R2(config)# access-list 1 permit 192.168.0.0 0.0.255.255
+R2(config)# ip nat inside source list 1 pool NAT-POOL2 overload
+R2(config)#
+R2(config)# interface serial0/1/0
+R2(config-if)# ip nat inside
+R2(config-if)# exit
+R2(config)# interface serial0/1/1
+R2(config-if)# ip nat outside
+R2(config-if)# end
 ```
