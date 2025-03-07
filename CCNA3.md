@@ -50,8 +50,8 @@
    * [Configuring DHCP for IPv6 Stateless Address Auto-Configuration (SLAAC)](#configuring-dhcp-for-ipv6-stateless-address-auto-configuration-slaac)
    * [Configuring DHCP for IPv6 Stateful Address Auto-configuration](#configuring-dhcp-for-ipv6-stateful-address-auto-configuration)
 - [NAT](#nat)
-- [Configure NAT for IPv4](#configure-nat-for-ipv4)
-- [Configure PAT for IPv4](#pat)
+  * [Configure NAT for IPv4](#configure-nat-for-ipv4)
+  * [Configure PAT for IPv4](#pat)
 
 ## Troubleshooting
 
