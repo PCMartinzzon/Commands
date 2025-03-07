@@ -936,7 +936,6 @@ R2(config-if)# ip nat outside
 ### PAT
 -PAT - Singel
 ```
-    # step 1 - defienra en pool
 R2(config)# ip nat inside source list 1 interface serial 0/1/1 overload
 R2(config)# access-list 1 permit 192.168.0.0 0.0.255.255
 R2(config)# interface serial0/1/0
@@ -947,7 +946,7 @@ R2(config-if)# ip nat outside
 ```
 -PAT - POOL
 ```
-    # step 1 - defienra en pool
+    # step 1 - definera en pool
 R2(config)# ip nat pool NAT-POOL2 209.165.200.226 209.165.200.240 netmask 255.255.255.224
 R2(config)# access-list 1 permit 192.168.0.0 0.0.255.255
 R2(config)# ip nat inside source list 1 pool NAT-POOL2 overload
