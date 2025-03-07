@@ -45,10 +45,11 @@
    * [Dynamic Access List (Stateful-Firewall)](#dynamic-access-list-stateful-firewall)
    * [Time-Based ACL](#time-based-acl)
    * [Random ACL](#random)
-- [DHCP and NAT](#dhcp-and-nat)
+- [DHCP](#dhcp)
    * [Configuring DHCP for IPv4](#configuring-dhcp-for-ipv4)
    * [Configuring DHCP for IPv6 Stateless Address Auto-Configuration (SLAAC)](#configuring-dhcp-for-ipv6-stateless-address-auto-configuration-slaac)
    * [Configuring DHCP for IPv6 Stateful Address Auto-configuration](#configuring-dhcp-for-ipv6-stateful-address-auto-configuration)
+- [NAT](#nat)
 - [Configure NAT for IPv4](#configure-nat-for-ipv4)
 - [Configure PAT for IPv4](#pat)
 
@@ -573,8 +574,19 @@ R1(config-subif)# ipv6 authentication key-chain eigrp 10 MYCHAIN (use this key)
 
 
 ## Access Control Lists
-
-
+```
+ .----------------.  .----------------.  .----------------.
+| .--------------. || .--------------. || .--------------. |
+| |      __      | || |     ______   | || |   _____      | |
+| |     /  \     | || |   .' ___  |  | || |  |_   _|     | |
+| |    / /\ \    | || |  / .'   \_|  | || |    | |       | |
+| |   / ____ \   | || |  | |         | || |    | |   _   | |
+| | _/ /    \ \_ | || |  \ `.___.'\  | || |   _| |__/ |  | |
+| ||____|  |____|| || |   `._____.'  | || |  |________|  | |
+| |              | || |              | || |              | |
+| '--------------' || '--------------' || '--------------' |
+ '----------------'  '----------------'  '----------------'
+```
 ### Standard Access Lists
 
 -Standard access lists only evaluate the source IP field. They can use the ‘host’ and ‘any’ keywords, or apply wildcard masks. They do not use port numbers.
@@ -756,7 +768,22 @@ Extended IP access list BROWSING
 
 
 
-## DHCP and NAT
+## DHCP
+
+```
+ .----------------.  .----------------.  .----------------.  .----------------. 
+| .--------------. || .--------------. || .--------------. || .--------------. |
+| |  ________    | || |  ____  ____  | || |     ______   | || |   ______     | |
+| | |_   ___ `.  | || | |_   ||   _| | || |   .' ___  |  | || |  |_   __ \   | |
+| |   | |   `. \ | || |   | |__| |   | || |  / .'   \_|  | || |    | |__) |  | |
+| |   | |    | | | || |   |  __  |   | || |  | |         | || |    |  ___/   | |
+| |  _| |___.' / | || |  _| |  | |_  | || |  \ `.___.'\  | || |   _| |_      | |
+| | |________.'  | || | |____||____| | || |   `._____.'  | || |  |_____|     | |
+| |              | || |              | || |              | || |              | |
+| '--------------' || '--------------' || '--------------' || '--------------' |
+ '----------------'  '----------------'  '----------------'  '----------------' 
+
+```
 
 ### Configuring DHCP for IPv4
 ```
@@ -806,8 +833,22 @@ R1# show ipv6 dhcp pool
 R1# show ipv6 dhcp binding
 ```
  
+## NAT
 
-## Configure NAT for IPv4
+```
+ .-----------------. .----------------.  .----------------.
+| .--------------. || .--------------. || .--------------. |
+| | ____  _____  | || |      __      | || |  _________   | |
+| ||_   \|_   _| | || |     /  \     | || | |  _   _  |  | |
+| |  |   \ | |   | || |    / /\ \    | || | |_/ | | \_|  | |
+| |  | |\ \| |   | || |   / ____ \   | || |     | |      | |
+| | _| |_\   |_  | || | _/ /    \ \_ | || |    _| |_     | |
+| ||_____|\____| | || ||____|  |____|| || |   |_____|    | |
+| |              | || |              | || |              | |
+| '--------------' || '--------------' || '--------------' |
+ '----------------'  '----------------'  '----------------'
+```
+### Configure NAT for IPv4
 
 -For both static and dynamic NAT, designate interfaces as inside or outside:
 ```
