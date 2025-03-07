@@ -44,6 +44,7 @@
    * [Applying Access Lists](#applying-access-lists)
    * [Dynamic Access List (Stateful-Firewall)](#dynamic-access-list-stateful-firewall)
    * [Time-Based ACL](#time-based-acl)
+   * [Random ACL](#random)
 - [DHCP and NAT](#dhcp-and-nat)
    * [Configuring DHCP for IPv4](#configuring-dhcp-for-ipv4)
    * [Configuring DHCP for IPv6 Stateless Address Auto-Configuration (SLAAC)](#configuring-dhcp-for-ipv6-stateless-address-auto-configuration-slaac)
@@ -606,7 +607,7 @@ R-1(config)# access-list 25 deny any (deny all other IP addresses)
 
 There can be additional optional commands (log, time-of-day, established, etc) on the end of most statements. The protocol field must match destination port/protocol - if used (example: TCP=Telnet, ICMP=Ping, UDP=DNS).
 
-#### Named Extended Access List
+### Named Extended Access List
 ```
 R-1(config)# ip access-list extended NAME (name the list)
 Example: Deny an individual host to an entire subnet for Telnet and also log matches:
@@ -650,7 +651,110 @@ R-1(config)# access-list 133 permit tcp 192.168.20.0  0.0.0.255 any eq telnet ti
 R-1# show access-list (see access lists on this router and # of ‘matches’ per line)
 R-1# show access-list NAME (see a specific access list and # of ‘matches’ per line)
 ```
- 
+
+### Random
+## Numbered Standard IPv4 ACL
+```
+R1(config)# access-list 10 remark ACE permits ONLY host 192.168.10.10 to the internet
+R1(config)# access-list 10 permit host 192.168.10.10
+R1(config)# do show access-lists
+Standard IP access list 10
+    10 permit 192.168.10.10
+R1(config)#
+```
+```
+# Now assume that a new network policy states that hosts in LAN 2 should also be permitted to the internet.
+R1(config)# access-list 10 remark ACE permits all host in LAN 2
+R1(config)# access-list 10 permit 192.168.20.0 0.0.0.255
+R1(config)# do show access-lists
+Standard IP access list 10
+    10 permit 192.168.10.10
+    20 permit 192.168.20.0, wildcard bits 0.0.0.255
+R1(config)#
+```
+```
+# Applicera
+R1(config)# interface Serial 0/1/0
+R1(config-if)# ip access-group 10 out
+R1(config-if)# end
+R1#
+```
+-N-A-M-E-D-
+```
+## Named Standard IPv4 ACL
+R1(config)# ip access-list standard PERMIT-ACCESS
+R1(config-std-nacl)# remark ACE permits host 192.168.10.10
+R1(config-std-nacl)# permit host 192.168.10.10
+R1(config-std-nacl)#
+```
+```
+# Now add an ACE permitting only host 192.168.10.10 and another ACE permitting all LAN 2 hosts to the internet.
+R1(config-std-nacl)# remark ACE permits host 192.168.10.10
+R1(config-std-nacl)# permit host 192.168.10.10
+R1(config-std-nacl)# remark ACE permits all hosts in LAN 2
+R1(config-std-nacl)# permit 192.168.20.0 0.0.0.255
+R1(config-std-nacl)# exit
+R1(config)#
+```
+```
+# Applicera
+R1(config)# interface Serial 0/1/0
+R1(config-if)# ip access-group PERMIT-ACCESS out
+R1(config-if)# end
+R1#
+```
+-V-T-Y-
+```
+## VTY - A named standard ACL
+R1(config)# username ADMIN secret class
+R1(config)# ip access-list standard ADMIN-HOST
+R1(config-std-nacl)# remark This ACL secures incoming vty lines
+R1(config-std-nacl)# permit 192.168.10.10
+R1(config-std-nacl)# deny any
+R1(config-std-nacl)# exit
+R1(config)# line vty 0 4
+R1(config-line)# login local
+R1(config-line)# transport input telnet
+R1(config-line)# access-class ADMIN-HOST in
+R1(config-line)# end
+R1#
+```
+
+-N-U-M-B-E-R-D--E-X-T-E-N-D-E-D-
+```
+R1(config)# access-list 110 permit tcp 192.168.10.0 0.0.0.255 any eq www
+R1(config)# access-list 110 permit tcp 192.168.10.0 0.0.0.255 any eq 443
+R1(config)# interface g0/0/0
+R1(config-if)# ip access-group 110 in
+R1(config-if)# exit
+R1(config)#
+```
+
+-N-A-M-E-D--E-X-T-E-N-D-E-D
+```
+R1(config)# ip access-list extended SURFING
+R1(config-ext-nacl)# Remark Permits inside HTTP and HTTPS traffic
+R1(config-ext-nacl)# permit tcp 192.168.10.0 0.0.0.255 any eq 80
+R1(config-ext-nacl)# permit tcp 192.168.10.0 0.0.0.255 any eq 443
+R1(config-ext-nacl)# exit
+R1(config)#
+R1(config)# ip access-list extended BROWSING
+R1(config-ext-nacl)# Remark Only permit returning HTTP and HTTPS traffic
+R1(config-ext-nacl)# permit tcp any 192.168.10.0 0.0.0.255 established
+R1(config-ext-nacl)# exit
+R1(config)# interface g0/0/0
+R1(config-if)# ip access-group SURFING in
+R1(config-if)# ip access-group BROWSING out
+R1(config-if)# end
+R1# show access-lists
+Extended IP access list SURFING
+    10 permit tcp 192.168.10.0 0.0.0.255 any eq www
+    20 permit tcp 192.168.10.0 0.0.0.255 any eq 443 (124 matches)
+Extended IP access list BROWSING
+    10 permit tcp any 192.168.10.0 0.0.0.255 established (369 matches)
+```
+
+
 
 ## DHCP and NAT
 
